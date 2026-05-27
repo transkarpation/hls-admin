@@ -8,11 +8,20 @@ import {
   PasswordInput,
   required,
   email,
+  useRedirect,
 } from "react-admin";
+import { toast } from "react-toastify";
 
 export function UserEdit() {
+  const redirect = useRedirect();
+
+  const onSuccess = () => {
+    toast.success("User updated successfully");
+    redirect("list", "users");
+  };
+
   return (
-    <Edit>
+    <Edit mutationOptions={{ onSuccess }} mutationMode="pessimistic">
       <SimpleForm>
         <TextInput source="name" validate={required()} />
         <TextInput source="email" validate={[required(), email()]} />

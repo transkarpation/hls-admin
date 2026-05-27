@@ -140,15 +140,43 @@ export const dataProvider: DataProvider = {
     const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
       method: "DELETE",
     });
+
+    if (resource === "users") {
+      fetch(`${apiUrl}/events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "user.deleted",
+          adminsOnly: true,
+          data: { user: { id: json.id, name: json.name, email: json.email, role: json.role } },
+        }),
+      });
+    }
+
     return { data: json };
   },
 
   deleteMany: async (resource, params) => {
-    await Promise.all(
+    const results = await Promise.all(
       params.ids.map((id) =>
         httpClient(`${apiUrl}/${resource}/${id}`, { method: "DELETE" })
       )
     );
+
+    if (resource === "users") {
+      for (const { json } of results) {
+        fetch(`${apiUrl}/events`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "user.deleted",
+            adminsOnly: true,
+            data: { user: { id: json.id, name: json.name, email: json.email, role: json.role } },
+          }),
+        });
+      }
+    }
+
     return { data: params.ids };
   },
 };
