@@ -96,6 +96,26 @@ export const dataProvider: DataProvider = {
       return { data: json };
     }
 
+    if (resource === "crons" && params.data.script) {
+      const formData = new FormData();
+      formData.append("name", params.data.name);
+      formData.append("expression", params.data.expression);
+      if (params.data.command) formData.append("command", params.data.command);
+      formData.append("enabled", String(params.data.enabled ?? true));
+      formData.append("script", params.data.script.rawFile);
+
+      const response = await fetch(`${apiUrl}/${resource}`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Create failed");
+      }
+      const json = await response.json();
+      return { data: json };
+    }
+
     const { json } = await httpClient(`${apiUrl}/${resource}`, {
       method: "POST",
       body: JSON.stringify(params.data),

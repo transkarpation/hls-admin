@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, pgEnum, uuid, bigint } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, pgEnum, uuid, bigint, boolean } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["admin", "user"]);
 
@@ -21,6 +21,19 @@ export const videos = pgTable("videos", {
   fileSize: bigint("file_size", { mode: "number" }),
   mimeType: text("mime_type"),
   uploadedBy: uuid("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const cronJobs = pgTable("cron_jobs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  expression: text("expression").notNull(),
+  command: text("command"),
+  scriptPath: text("script_path"),
+  scriptFilename: text("script_filename"),
+  enabled: boolean("enabled").notNull().default(true),
+  lastRunAt: timestamp("last_run_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

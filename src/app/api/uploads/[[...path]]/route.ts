@@ -13,7 +13,7 @@ const MIME_TYPES: Record<string, string> = {
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
+  { params }: { params: Promise<{ path?: string[] }> }
 ) {
   const session = await auth();
   if (!session)

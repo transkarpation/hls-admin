@@ -15,6 +15,20 @@
       "when": 1779864328341,
       "tag": "0001_dear_old_lace",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779870433168,
+      "tag": "0002_robust_piledriver",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779870615588,
+      "tag": "0003_greedy_vargas",
+      "breakpoints": true
     }
   ]
 }
