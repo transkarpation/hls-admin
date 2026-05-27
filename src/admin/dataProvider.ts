@@ -71,6 +71,19 @@ export const dataProvider: DataProvider = {
       method: "PUT",
       body: JSON.stringify(params.data),
     });
+
+    if (resource === "users") {
+      fetch(`${apiUrl}/events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "user.updated",
+          adminsOnly: true,
+          data: { user: { id: json.id, name: json.name, email: json.email, role: json.role } },
+        }),
+      });
+    }
+
     return { data: json };
   },
 

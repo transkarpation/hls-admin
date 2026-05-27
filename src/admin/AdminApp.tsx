@@ -4,6 +4,10 @@ import { Admin, Resource, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import PeopleIcon from "@mui/icons-material/People";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "react-toastify/dist/ReactToastify.css";
 import { UserList } from "./UserList";
 import { UserCreate } from "./UserCreate";
@@ -27,10 +31,10 @@ export function AdminApp() {
         <ToastContainer position="top-right" />
         <Admin dataProvider={dataProvider} authProvider={authProvider} dashboard={Dashboard}>
           <WSEventHandler />
-          <Resource name="users" list={UserList} create={UserCreate} edit={UserEdit} />
-          <Resource name="videos" list={VideoList} create={VideoCreate} />
-          <Resource name="crons" list={CronList} create={CronCreate} />
-          <Resource name="deleted-users" options={{ label: "Deleted Users" }} list={DeletedUserList} />
+          <Resource name="users" list={UserList} create={UserCreate} edit={UserEdit} icon={PeopleIcon} />
+          <Resource name="videos" list={VideoList} create={VideoCreate} icon={VideoLibraryIcon} />
+          <Resource name="crons" list={CronList} create={CronCreate} icon={ScheduleIcon} />
+          <Resource name="deleted-users" options={{ label: "Deleted Users" }} list={DeletedUserList} icon={DeleteIcon} />
           <CustomRoutes>
             <Route path="/events" element={<EventsPage />} />
           </CustomRoutes>

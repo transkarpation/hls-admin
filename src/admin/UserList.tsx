@@ -29,6 +29,15 @@ function UserListUpdater() {
         );
         refresh();
       }
+      if (msg.type === "user.updated") {
+        const user = msg.user as { name: string; email: string };
+        const sender = msg.sender as { name: string; email: string };
+        toast.info(
+          `${sender.name} updated user ${user.name} (${user.email})`,
+          { autoClose: 5000 }
+        );
+        refresh();
+      }
       if (msg.type === "user.deleted") {
         const user = msg.user as { name: string; email: string };
         const sender = msg.sender as { name: string; email: string };
