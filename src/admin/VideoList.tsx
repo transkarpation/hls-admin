@@ -7,6 +7,8 @@ import {
   DateField,
   FunctionField,
 } from "react-admin";
+import { Chip, Button } from "@mui/material";
+import { PlayArrow } from "@mui/icons-material";
 
 function formatFileSize(bytes: number | null) {
   if (!bytes) return "—";
@@ -28,7 +30,32 @@ export function VideoList() {
           }
         />
         <TextField source="mimeType" label="Type" />
+        <FunctionField
+          label="Status"
+          render={(record: { status: string }) => {
+            const color =
+              record.status === "ready" ? "success" :
+              record.status === "processing" ? "info" :
+              record.status === "failed" ? "error" : "default";
+            return <Chip label={record.status} color={color} size="small" variant="outlined" />;
+          }}
+        />
         <DateField source="createdAt" label="Uploaded" />
+        <FunctionField
+          label=""
+          render={(record: { id: string; status: string }) =>
+            record.status === "ready" ? (
+              <Button
+                size="small"
+                startIcon={<PlayArrow />}
+                href={`/watch?id=${record.id}`}
+                target="_blank"
+              >
+                Watch
+              </Button>
+            ) : null
+          }
+        />
       </Datagrid>
     </List>
   );

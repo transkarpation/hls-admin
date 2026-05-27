@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
 import { count, asc, desc, type AnyColumn } from "drizzle-orm";
-import { redis } from "@/lib/redis";
+import { videoQueue } from "@/lib/videoQueue";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads", "videos");
 
@@ -49,6 +49,8 @@ export async function GET(req: NextRequest) {
         filename: videos.filename,
         fileSize: videos.fileSize,
         mimeType: videos.mimeType,
+        status: videos.status,
+        hlsPath: videos.hlsPath,
         createdAt: videos.createdAt,
       })
       .from(videos)
@@ -113,20 +115,12 @@ export async function POST(req: NextRequest) {
       createdAt: videos.createdAt,
     });
 
-  await redis.lpush(
-    "tasks:video",
-    JSON.stringify({
-      id: crypto.randomUUID(),
-      type: "video.uploaded",
-      videoId: created.id,
-      filePath: `uploads/videos/${safeName}`,
-      filename: file.name,
-      mimeType: file.type,
-      fileSize: file.size,
-      uploadedBy: session.user.id,
-      createdAt: new Date().toISOString(),
-    })
-  );
+  await videoQueue.add("transcode", {
+    videoId: created.id,
+    filePath: `uploads/videos/${safeName}`,
+    filename: file.name,
+    mimeType: file.type,
+  });
 
   return NextResponse.json(created, { status: 201 });
 }

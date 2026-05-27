@@ -13,12 +13,16 @@ export const users = pgTable("users", {
   deletedAt: timestamp("deleted_at"),
 });
 
+export const videoStatusEnum = pgEnum("video_status", ["uploaded", "processing", "ready", "failed"]);
+
 export const videos = pgTable("videos", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   description: text("description"),
   filename: text("filename").notNull(),
   filePath: text("file_path").notNull(),
+  hlsPath: text("hls_path"),
+  status: videoStatusEnum("status").notNull().default("uploaded"),
   fileSize: bigint("file_size", { mode: "number" }),
   mimeType: text("mime_type"),
   uploadedBy: uuid("uploaded_by").references(() => users.id),

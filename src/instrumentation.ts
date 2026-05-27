@@ -9,5 +9,8 @@ export async function register() {
 
     const { restoreJobs } = await import("@/lib/scheduler");
     await restoreJobs();
+
+    const { startVideoWorker } = await import("@/lib/videoWorker");
+    startVideoWorker();
   }
 }
