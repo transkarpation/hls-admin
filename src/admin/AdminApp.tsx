@@ -12,12 +12,14 @@ import { Dashboard } from "./Dashboard";
 import { dataProvider } from "./dataProvider";
 import { authProvider } from "./authProvider";
 import { WebSocketProvider } from "./WebSocketProvider";
+import { WSEventHandler } from "./WSEventHandler";
 
 export function AdminApp() {
   return (
     <BrowserRouter basename="/dashboard">
       <WebSocketProvider>
         <Admin dataProvider={dataProvider} authProvider={authProvider} dashboard={Dashboard}>
+          <WSEventHandler />
           <Resource name="users" list={UserList} create={UserCreate} />
           <Resource name="videos" list={VideoList} create={VideoCreate} />
           <Resource name="crons" list={CronList} create={CronCreate} />

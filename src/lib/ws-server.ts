@@ -126,7 +126,9 @@ export function broadcast(data: unknown) {
 }
 
 export function broadcastToAdmins(data: unknown, excludeUserId?: string) {
+  console.log('broadcastToAdmins ', !wss)
   if (!wss) return;
+
   const msg = JSON.stringify(data);
   wss.clients.forEach((ws) => {
     const s = ws as AuthenticatedSocket;
@@ -135,6 +137,7 @@ export function broadcastToAdmins(data: unknown, excludeUserId?: string) {
       s.userRole === "admin" &&
       s.userId !== excludeUserId
     ) {
+      console.log("sending")
       s.send(msg);
     }
   });

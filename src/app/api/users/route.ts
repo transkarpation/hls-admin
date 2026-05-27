@@ -4,7 +4,6 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { count, asc, desc, type AnyColumn } from "drizzle-orm";
-import { broadcastToAdmins } from "@/lib/ws-server";
 
 const sortableColumns: Record<string, AnyColumn> = {
   id: users.id,
@@ -89,15 +88,6 @@ export async function POST(req: NextRequest) {
       role: users.role,
       createdAt: users.createdAt,
     });
-
-  broadcastToAdmins(
-    {
-      type: "new.user",
-      user: { id: created.id, name: created.name, email: created.email, role: created.role },
-      createdBy: { id: session.user.id, name: session.user.name },
-    },
-    session.user.id
-  );
 
   return NextResponse.json(created, { status: 201 });
 }

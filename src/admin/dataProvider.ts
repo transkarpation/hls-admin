@@ -120,6 +120,21 @@ export const dataProvider: DataProvider = {
       method: "POST",
       body: JSON.stringify(params.data),
     });
+
+    if (resource === "users") {
+      await fetch(`${apiUrl}/events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "new.user",
+          adminsOnly: true,
+          data: {
+            user: { id: json.id, name: json.name, email: json.email, role: json.role },
+          },
+        }),
+      });
+    }
+
     return { data: json };
   },
 
@@ -130,5 +145,12 @@ export const dataProvider: DataProvider = {
     return { data: json };
   },
 
-  deleteMany: async () => ({ data: [] }),
+  deleteMany: async (resource, params) => {
+    await Promise.all(
+      params.ids.map((id) =>
+        httpClient(`${apiUrl}/${resource}/${id}`, { method: "DELETE" })
+      )
+    );
+    return { data: params.ids };
+  },
 };
