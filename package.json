@@ -12,6 +12,7 @@
     "db:seed": "tsx scripts/seed-admins.ts"
   },
   "dependencies": {
+    "@types/video.js": "^7.3.58",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.77.6",
     "dotenv": "^17.4.2",
@@ -26,6 +27,8 @@
     "react-admin": "^5.14.7",
     "react-dom": "19.2.4",
     "react-toastify": "^11.1.0",
+    "video.js": "^8.23.7",
+    "videojs-hotkeys": "^0.2.30",
     "ws": "^8.21.0"
   },
   "devDependencies": {

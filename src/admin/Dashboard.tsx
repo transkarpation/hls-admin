@@ -20,9 +20,6 @@ export function Dashboard() {
           />
         </Box>
         <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-          <Button variant="contained" href="/watch">
-            Watch Lesson 10
-          </Button>
           <Button variant="outlined" component={Link} to="/events">
             Events
           </Button>

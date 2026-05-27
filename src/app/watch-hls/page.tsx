@@ -3,14 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import videojs from "video.js";
-import type Player from "video.js/dist/types/player";
-import "video.js/dist/video-js.css";
-import "videojs-hotkeys";
+import Hls from "hls.js";
 
 export default function WatchPage() {
-  const videoRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<Player | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [title, setTitle] = useState("");
@@ -36,40 +32,21 @@ export default function WatchPage() {
         }
 
         const src = `/api/uploads/${video.hlsPath.replace("uploads/", "")}`;
+        const el = videoRef.current;
+        if (!el) return;
 
-        if (!videoRef.current) return;
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(src);
+          hls.attachMedia(el);
+          return () => hls.destroy();
+        }
 
-        const videoElement = document.createElement("video-js");
-        videoElement.classList.add("vjs-big-play-centered");
-        videoRef.current.appendChild(videoElement);
-
-        const player = videojs(videoElement, {
-          controls: true,
-          autoplay: false,
-          preload: "auto",
-          fluid: true,
-          playbackRates: [0.5, 1, 1.25, 1.5, 2],
-          sources: [{ src, type: "application/x-mpegURL" }],
-          plugins: {
-            hotkeys: {
-              seekStep: 5,
-              volumeStep: 0.1,
-              enableModifiersForNumbers: false,
-            },
-          },
-        });
-
-        playerRef.current = player;
+        if (el.canPlayType("application/vnd.apple.mpegurl")) {
+          el.src = src;
+        }
       })
       .catch((err) => setError(err.message));
-
-    return () => {
-      const player = playerRef.current;
-      if (player && !player.isDisposed()) {
-        player.dispose();
-        playerRef.current = null;
-      }
-    };
   }, [id]);
 
   return (
@@ -81,7 +58,11 @@ export default function WatchPage() {
       {error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        <div ref={videoRef} className="w-full max-w-4xl" />
+        <video
+          ref={videoRef}
+          controls
+          className="w-full max-w-4xl rounded-lg bg-black"
+        />
       )}
     </div>
   );

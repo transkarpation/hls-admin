@@ -40,7 +40,7 @@ export function VideoList() {
             return <Chip label={record.status} color={color} size="small" variant="outlined" />;
           }}
         />
-        <DateField source="createdAt" label="Uploaded" />
+        <DateField source="createdAt" label="Uploaded" showTime />
         <FunctionField
           label=""
           render={(record: { id: string; status: string }) =>
