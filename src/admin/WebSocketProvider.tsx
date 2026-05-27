@@ -7,13 +7,11 @@ type WSMessage = Record<string, unknown>;
 
 interface WebSocketContextValue {
   connected: boolean;
-  messages: WSMessage[];
   send: (data: WSMessage) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextValue>({
   connected: false,
-  messages: [],
   send: () => {},
 });
 

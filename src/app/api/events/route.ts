@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
-  const { type, data, adminsOnly } = body;
+  const { type, data, adminsOnly, excludeSelf = false } = body;
 
   if (!type) {
     return NextResponse.json(
@@ -17,10 +17,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const event = { type, ...data };
+  const event = {
+    type,
+    ...data,
+    sender: {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+      role: session.user.role,
+    },
+  };
+  const excludeId = excludeSelf ? session.user.id : undefined;
 
   if (adminsOnly) {
-    broadcastToAdmins(event, session.user.id);
+    broadcastToAdmins(event, excludeId);
   } else {
     broadcast(event);
   }

@@ -3,7 +3,8 @@ import bcrypt from "bcryptjs";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { count, asc, desc, type AnyColumn } from "drizzle-orm";
+import { count, asc, desc, isNull, type AnyColumn } from "drizzle-orm";
+import { getConnectedClients } from "@/lib/ws-server";
 
 const sortableColumns: Record<string, AnyColumn> = {
   id: users.id,
@@ -48,13 +49,17 @@ export async function GET(req: NextRequest) {
         createdAt: users.createdAt,
       })
       .from(users)
+      .where(isNull(users.deletedAt))
       .orderBy(orderBy)
       .offset(offset)
       .limit(limit),
-    db.select({ total: count() }).from(users),
+    db.select({ total: count() }).from(users).where(isNull(users.deletedAt)),
   ]);
 
-  return NextResponse.json(data, {
+  const onlineIds = new Set(getConnectedClients().map((c) => c.id));
+  const dataWithOnline = data.map((u) => ({ ...u, online: onlineIds.has(u.id) }));
+
+  return NextResponse.json(dataWithOnline, {
     headers: {
       "Content-Range": `users ${offset}-${offset + data.length - 1}/${total}`,
       "Access-Control-Expose-Headers": "Content-Range",

@@ -122,15 +122,13 @@ export const dataProvider: DataProvider = {
     });
 
     if (resource === "users") {
-      await fetch(`${apiUrl}/events`, {
+      fetch(`${apiUrl}/events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "new.user",
+          type: "user.created",
           adminsOnly: true,
-          data: {
-            user: { id: json.id, name: json.name, email: json.email, role: json.role },
-          },
+          data: { user: { id: json.id, name: json.name, email: json.email, role: json.role } },
         }),
       });
     }

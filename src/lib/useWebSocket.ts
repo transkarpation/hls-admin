@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { emitWSEvent } from "./wsEventBus";
 
 type WSMessage = Record<string, unknown>;
 
 export function useWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [messages, setMessages] = useState<WSMessage[]>([]);
 
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_WS_URL;
@@ -21,7 +21,8 @@ export function useWebSocket() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        setMessages((prev) => [...prev, data]);
+        console.log("[ws] message received:", data);
+        emitWSEvent(data);
       } catch {
         // ignore non-JSON
       }
@@ -38,5 +39,5 @@ export function useWebSocket() {
     }
   }, []);
 
-  return { connected, messages, send };
+  return { connected, send };
 }

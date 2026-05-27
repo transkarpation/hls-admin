@@ -11,7 +11,13 @@ interface AuthenticatedSocket extends WebSocket {
   userRole?: string;
 }
 
-let wss: WebSocketServer | null = null;
+const globalForWss = globalThis as unknown as {
+  __wss?: WebSocketServer;
+};
+
+function getWss(): WebSocketServer | null {
+  return globalForWss.__wss ?? null;
+}
 
 async function authenticateRequest(
   req: IncomingMessage
@@ -50,9 +56,10 @@ async function authenticateRequest(
 }
 
 export function startWebSocketServer() {
-  if (wss) return wss;
+  if (globalForWss.__wss) return globalForWss.__wss;
 
-  wss = new WebSocketServer({ port: WS_PORT });
+  const wss = new WebSocketServer({ port: WS_PORT });
+  globalForWss.__wss = wss;
 
   wss.on("connection", async (ws: AuthenticatedSocket, req) => {
     const user = await authenticateRequest(req);
@@ -100,6 +107,7 @@ export function getConnectedClients(): {
   email: string;
   role: string;
 }[] {
+  const wss = getWss();
   if (!wss) return [];
   const clients: { id: string; email: string; role: string }[] = [];
   wss.clients.forEach((ws) => {
@@ -116,6 +124,7 @@ export function getConnectedClients(): {
 }
 
 export function broadcast(data: unknown) {
+  const wss = getWss();
   if (!wss) return;
   const msg = JSON.stringify(data);
   wss.clients.forEach((ws) => {
@@ -126,18 +135,21 @@ export function broadcast(data: unknown) {
 }
 
 export function broadcastToAdmins(data: unknown, excludeUserId?: string) {
-  console.log('broadcastToAdmins ', !wss)
+  console.log("broadcastToAdmins")
+  const wss = getWss();
   if (!wss) return;
+  console.log("broadcastToAdmins2")
 
   const msg = JSON.stringify(data);
   wss.clients.forEach((ws) => {
+    console.log("here")
     const s = ws as AuthenticatedSocket;
     if (
       s.readyState === WebSocket.OPEN &&
       s.userRole === "admin" &&
       s.userId !== excludeUserId
     ) {
-      console.log("sending")
+      console.log("send ", msg)
       s.send(msg);
     }
   });

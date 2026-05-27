@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, Typography, Button, Box, Chip } from "@mui/material";
+import { Link } from "react-router-dom";
 import { useWS } from "./WebSocketProvider";
 
 export function Dashboard() {
@@ -18,9 +19,12 @@ export function Dashboard() {
             variant="outlined"
           />
         </Box>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
           <Button variant="contained" href="/watch">
             Watch Lesson 10
+          </Button>
+          <Button variant="outlined" component={Link} to="/events">
+            Events
           </Button>
         </Box>
       </CardContent>
