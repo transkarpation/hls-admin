@@ -90,25 +90,6 @@ export const dataProvider: DataProvider = {
   updateMany: async () => ({ data: [] }),
 
   create: async (resource, params) => {
-    if (resource === "videos" && params.data.file) {
-      const formData = new FormData();
-      formData.append("title", params.data.title);
-      if (params.data.description)
-        formData.append("description", params.data.description);
-      formData.append("file", params.data.file.rawFile);
-
-      const response = await fetch(`${apiUrl}/${resource}`, {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || "Upload failed");
-      }
-      const json = await response.json();
-      return { data: json };
-    }
-
     if (resource === "crons" && params.data.script) {
       const formData = new FormData();
       formData.append("name", params.data.name);

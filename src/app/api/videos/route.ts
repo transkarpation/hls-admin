@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
 import { count, asc, desc, type AnyColumn } from "drizzle-orm";
+import { redis } from "@/lib/redis";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads", "videos");
 
@@ -111,6 +112,21 @@ export async function POST(req: NextRequest) {
       mimeType: videos.mimeType,
       createdAt: videos.createdAt,
     });
+
+  await redis.lpush(
+    "tasks:video",
+    JSON.stringify({
+      id: crypto.randomUUID(),
+      type: "video.uploaded",
+      videoId: created.id,
+      filePath: `uploads/videos/${safeName}`,
+      filename: file.name,
+      mimeType: file.type,
+      fileSize: file.size,
+      uploadedBy: session.user.id,
+      createdAt: new Date().toISOString(),
+    })
+  );
 
   return NextResponse.json(created, { status: 201 });
 }
