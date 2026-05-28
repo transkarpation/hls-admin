@@ -12,6 +12,8 @@ import {
   IconButton,
   Stack,
   TextField,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { Cancel, Delete, CheckCircle, Error as ErrorIcon } from "@mui/icons-material";
 import { toast } from "react-toastify";
@@ -80,12 +82,14 @@ export function VideoCreate() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [transcribe, setTranscribe] = useState(false);
 
   const handleSubmit = useCallback(() => {
     if (!file || !title) return;
 
     const fields: Record<string, string> = { title };
     if (description) fields.description = description;
+    if (transcribe) fields.transcribe = "true";
 
     upload(file, "videos", fields);
     toast.info(`Upload started: ${file.name}`);
@@ -93,7 +97,8 @@ export function VideoCreate() {
     setTitle("");
     setDescription("");
     setFile(null);
-  }, [file, title, description]);
+    setTranscribe(false);
+  }, [file, title, description, transcribe]);
 
   return (
     <Box sx={{ maxWidth: 600 }}>
@@ -115,6 +120,15 @@ export function VideoCreate() {
               multiline
               rows={3}
               fullWidth
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={transcribe}
+                  onChange={(e) => setTranscribe(e.target.checked)}
+                />
+              }
+              label="Generate transcript"
             />
             <Button variant="outlined" component="label">
               {file ? file.name : "Choose video file"}

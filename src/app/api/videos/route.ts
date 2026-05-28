@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
         mimeType: videos.mimeType,
         status: videos.status,
         hlsPath: videos.hlsPath,
+        subtitlesPath: videos.subtitlesPath,
         createdAt: videos.createdAt,
       })
       .from(videos)
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
   const title = formData.get("title") as string;
   const description = formData.get("description") as string | null;
   const file = formData.get("file") as File | null;
+  const transcribe = formData.get("transcribe") === "true";
 
   if (!title || !file) {
     return NextResponse.json(
@@ -103,6 +105,7 @@ export async function POST(req: NextRequest) {
       filePath: `uploads/videos/${safeName}`,
       fileSize: file.size,
       mimeType: file.type,
+      transcribe,
       uploadedBy: session.user.id,
     })
     .returning({
@@ -120,6 +123,7 @@ export async function POST(req: NextRequest) {
     filePath: `uploads/videos/${safeName}`,
     filename: file.name,
     mimeType: file.type,
+    transcribe,
   });
 
   return NextResponse.json(created, { status: 201 });

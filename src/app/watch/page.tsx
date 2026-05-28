@@ -43,6 +43,18 @@ export default function WatchPage() {
         videoElement.classList.add("vjs-big-play-centered");
         videoRef.current.appendChild(videoElement);
 
+        const tracks = video.subtitlesPath
+          ? [
+              {
+                kind: "subtitles" as const,
+                src: `/api/uploads/${video.subtitlesPath.replace("uploads/", "")}`,
+                srclang: "en",
+                label: "English",
+                default: true,
+              },
+            ]
+          : [];
+
         const player = videojs(videoElement, {
           controls: true,
           autoplay: false,
@@ -50,6 +62,7 @@ export default function WatchPage() {
           fluid: true,
           playbackRates: [0.5, 1, 1.25, 1.5, 2],
           sources: [{ src, type: "application/x-mpegURL" }],
+          tracks,
           plugins: {
             hotkeys: {
               seekStep: 5,
